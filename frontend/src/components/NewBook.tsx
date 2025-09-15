@@ -21,22 +21,26 @@ const NewBook: React.FC<NewBookProps> = (props) => {
   const [ addBook ] = useMutation<AddBookData, AddBookParam>(ADD_BOOK, {
     update: (cache, res) => {
       const newBook = res.data?.addBook;
-      if (!newBook) return;
 
       cache.updateQuery<AllBooksData>(
         { query: ALL_BOOKS, variables: { genre: null } }, 
-        (data) => {
-          if (!data) return { allBooks: [newBook] };
-          return { allBooks: data.allBooks.concat(newBook) };
-        });
-      cache.updateQuery<AllAuthorsData>({ query: ALL_AUTHORS }, (data) => {
-        if (!data) return { allAuthors: [newBook.author] };
+        (cacheData) => {
+          if (!newBook) return cacheData;
+          if (!cacheData) return { allBooks: [newBook] };
+          
+          return { allBooks: cacheData.allBooks.concat(newBook) };
+        }
+      );
+      
+      cache.updateQuery<AllAuthorsData>({ query: ALL_AUTHORS }, (cacheData) => {
+        if (!newBook) return cacheData;
+        if (!cacheData) return { allAuthors: [newBook.author] };
 
-        const isAuthorExists = data.allAuthors.some((a) => a.id === newBook.author.id);
+        const isAuthorExists = cacheData.allAuthors.some((a) => a.id === newBook.author.id);
 
-        if (isAuthorExists) return data;
+        if (isAuthorExists) return cacheData;
 
-        return { allAuthors: data.allAuthors.concat(newBook.author) };
+        return { allAuthors: cacheData.allAuthors.concat(newBook.author) };
       });
     }
   });
