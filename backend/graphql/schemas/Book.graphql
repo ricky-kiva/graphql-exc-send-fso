@@ -1,0 +1,25 @@
+type Book {
+  title: String!
+  published: Int!
+  author: Author!
+  genres: [String!]!
+  id: ID!
+}
+
+extend type Query {
+  allBooks(author: String, genre: String): [Book!]!
+  bookCount: Int!
+}
+
+extend type Mutation {
+  addBook(
+    title: String!
+    author: String!
+    published: Int!
+    genres: [String!]!
+  ): Book!
+}
+
+type Subscription {
+  bookAdded: Book!
+}

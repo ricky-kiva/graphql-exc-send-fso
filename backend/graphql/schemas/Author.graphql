@@ -1,0 +1,18 @@
+type Author {
+  name: String!
+  born: Int
+  bookCount: Int!
+  id: ID!
+}
+
+extend type Query {
+  allAuthors: [Author!]!
+  authorCount: Int
+}
+
+extend type Mutation {
+  editAuthor(
+    name: String!
+    born: Int!
+  ): Author
+}
